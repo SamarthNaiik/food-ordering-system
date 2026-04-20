@@ -1,0 +1,64 @@
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: calc(100vh - 70px);
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 20px 0;
+    transition: var(--transition);
+}
+
+.sidebar-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 15px;
+}
+
+.sidebar-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.sidebar-option img {
+    width: 24px;
+    filter: grayscale(1);
+    transition: var(--transition);
+}
+
+.sidebar-option:hover {
+    background-color: #f1f5f9;
+    color: var(--text-main);
+}
+
+.sidebar-option.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 99, 71, 0.3);
+}
+
+.sidebar-option.active img {
+    filter: brightness(0) invert(1);
+}
+
+.sidebar-option p {
+    font-size: 15px;
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        width: 80px;
+    }
+    .sidebar-option p {
+        display: none;
+    }
+    .sidebar-options {
+        align-items: center;
+    }
+}

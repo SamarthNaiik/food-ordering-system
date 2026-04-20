@@ -1,0 +1,133 @@
+.profile {
+    margin: 50px auto;
+    display: flex;
+    justify-content: center;
+    animation: fadeIn 0.8s ease;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    padding: 40px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+}
+
+.profile-title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.profile-title h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.profile-title p {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.profile-img-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.profile-img-upload p {
+    font-weight: 600;
+    color: var(--text-main);
+    width: 100%;
+}
+
+.profile-img-upload label {
+    cursor: pointer;
+    position: relative;
+}
+
+.profile-img-upload label img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--bg-light);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.profile-img-upload label:hover img {
+    transform: scale(1.05);
+    border-color: var(--primary-color);
+}
+
+.profile-img-upload span {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-input-group label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.profile-input-group input {
+    background-color: var(--bg-light);
+}
+
+.profile-input-group input:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.profile-input-group small {
+    font-size: 11px;
+    color: var(--text-light);
+}
+
+.profile-btn {
+    width: 100%;
+    margin-top: 30px;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.profile-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.profile-loading {
+    text-align: center;
+    padding: 100px;
+    font-size: 18px;
+    color: var(--text-light);
+}
+
+@media (max-width: 500px) {
+    .profile-container {
+        padding: 20px;
+    }
+}

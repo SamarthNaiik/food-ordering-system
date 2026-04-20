@@ -28,12 +28,12 @@ const Footer = () => {
             <h2>Get In Touch</h2>
             <ul>
                 <li>+91-902-396-5140</li>
-                <li>contact@tomato.in</li>
+                <li>contact@foodordering.com</li>
             </ul>
         </div>
       </div>
       <hr/>
-      <p className="footer-copyright">Copyright 2024 @ Tomato.com - All Rights Reserved</p>
+      <p className="footer-copyright">Copyright 2024 @ Food Ordering System - All Rights Reserved</p>
     </div>
   )
 }

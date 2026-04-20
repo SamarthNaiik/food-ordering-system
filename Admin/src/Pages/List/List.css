@@ -1,0 +1,62 @@
+.list {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+}
+
+.list p {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: var(--text-main);
+}
+
+.list-table-format {
+    display: grid;
+    grid-template-columns: 0.8fr 2fr 1.2fr 1fr 0.5fr;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 25px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 15px;
+    color: var(--text-muted);
+}
+
+.list-table-format.title {
+    background-color: #f8fafc;
+    border-radius: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+    border-bottom: none;
+    margin-bottom: 15px;
+}
+
+.list-table-format img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.list-table-format .cursor {
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 18px;
+    transition: var(--transition);
+}
+
+.list-table-format .cursor:hover {
+    transform: scale(1.2);
+}
+
+@media (max-width: 600px) {
+    .list-table-format {
+        grid-template-columns: 1fr 2fr 0.5fr;
+        font-size: 13px;
+        padding: 15px;
+    }
+    .list-table-format.title {
+        display: none;
+    }
+}

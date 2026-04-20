@@ -1,14 +1,26 @@
-.food-display{
-    margin-top: 30px;
+.food-display {
+  padding: 40px 0;
+  animation: fadeIn 1s ease;
 }
-.food-display h2{
-    font-size: max(2vw,24px);
-    font-weight: 600;
+
+.food-display h2 {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
 }
-.food-display-list{
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
-    margin-top: 30px;
-    gap: 30px;
-    row-gap: 50px;
+
+.food-display-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  row-gap: 40px;
+}
+
+@media (max-width: 750px) {
+  .food-display-list {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
 }
