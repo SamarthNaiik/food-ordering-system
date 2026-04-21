@@ -5,7 +5,7 @@ import { assets } from '../../assets/assets'
 const Navbar = ({setToken}) => {
   
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setToken("");
   }
 

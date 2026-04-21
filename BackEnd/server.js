@@ -8,6 +8,7 @@ import "dotenv/config"
 import cartRouter from "./Routes/cartRoute.js"
 import orderRouter from "./Routes/orderRoute.js"
 import startOrderCron from "./Cron/orderCron.js"
+import promoRouter from "./Routes/promoRoute.js"
 
 // app config
 const app=express()
@@ -30,6 +31,7 @@ app.use("/profile-images",express.static('uploads/profile'))
 app.use("/api/user",userRouter)
 app.use("/api/cart",cartRouter)
 app.use("/api/order",orderRouter)
+app.use("/api/promo",promoRouter)
 
 app.get("/",(req,res)=>{
     res.send("API Working")

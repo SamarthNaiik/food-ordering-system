@@ -6,7 +6,7 @@ import { useContext } from 'react'
 import { StoreContext } from '../../context/StoreContext'
 
 const Navbar = ({setShowLogin}) => {
-  const { getTotalCartAmount, token, setToken, search, setSearch, userData } = useContext(StoreContext)
+  const { getTotalCartAmount, token, setToken, search, setSearch, userData, setUserData, url } = useContext(StoreContext)
   const navigate = useNavigate()
   const { pathname } = useLocation();
   const [menu, setMenu] = useState(pathname === "/myorders" ? "my-orders" : "home");
@@ -18,8 +18,9 @@ const Navbar = ({setShowLogin}) => {
   }, [pathname]);
 
   const logout=()=>{
-    localStorage.removeItem("token")
+    sessionStorage.removeItem("token")
     setToken("")
+    setUserData(null)
     navigate("/")
   }
   return (
@@ -48,9 +49,9 @@ const Navbar = ({setShowLogin}) => {
         </div>
         {!token ? <button onClick={() => setShowLogin(true)}>SignIn</button>
           : <div className='navbar-profile'>
-            <img src={userData && userData.image ? "http://localhost:4000/profile-images/" + userData.image : assets.profile_icon} alt='' />
+            <img src={userData && userData.image ? url + "profile-images/" + userData.image : assets.profile_icon} alt='' />
             <ul className="nav-profile-dropdown">
-              <li onClick={() => navigate("/profile")}><img src={assets.profile_icon} alt='' /><p>Profile</p></li>
+              <li onClick={() => navigate("/profile")}><img className="dropdown-profile-img" src={userData && userData.image ? url + "profile-images/" + userData.image : assets.profile_icon} alt='' /><p>Profile</p></li>
               <hr />
               <li onClick={() => navigate("/myorders")}><img src={assets.bag_icon} alt='' /><p>Orders</p></li>
               <hr />

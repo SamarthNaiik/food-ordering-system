@@ -47,7 +47,7 @@ const MyOrders = () => {
 
     const filteredOrders = data.filter(order => {
         const timeLeft = getTimeLeft(order.date);
-        const isActive = timeLeft > 0 || order.status === "Food Processing" || order.status === "Out for Delivery";
+        const isActive = order.status !== "Cancelled" && (timeLeft > 0 || order.status === "Food Processing" || order.status === "Out for Delivery" || order.status === "Bill Sent");
         return tab === "active" ? isActive : !isActive;
     });
 
@@ -101,7 +101,7 @@ const MyOrders = () => {
                             })}</p>
                             <p>₹{order.amount}.00</p>
                             <p>Items: {order.items.length}</p>
-                            <p><span className={order.status === "Bill Sent" ? "status-alert" : ""}>&#x25cf;</span> <b>{order.status === "Bill Sent" ? "Bill Ready - Please Pay" : order.status}</b></p>
+                            <p><span className={order.status === "Bill Sent" ? "status-alert" : ""}>&#x25cf;</span> <b style={order.status === "Cancelled" ? {color: 'red'} : {}}>{order.status === "Bill Sent" ? "Bill Ready - Please Pay" : order.status}</b></p>
                             <div className="order-actions">
                                 {order.status === "Bill Sent" ? (
                                     <>
@@ -109,7 +109,7 @@ const MyOrders = () => {
                                         <button onClick={() => { setSelectedOrder(order); setShowBillModal(true); }} className='view-bill-btn'>View Detailed Bill</button>
                                     </>
                                 ) : (
-                                    <button onClick={fetchOrders}>Track Order</button>
+                                    order.orderType !== "Dine-In" && <button onClick={fetchOrders}>Track Order</button>
                                 )}
                                 {timeLeft > 0 && order.status === "Food Processing" && (
                                     <button onClick={() => cancelOrder(order._id)} className='cancel-btn'>
@@ -169,10 +169,33 @@ const MyOrders = () => {
                             </table>
                             <hr />
                             <div className="bill-total">
-                                <div className="total-row grand-total">
-                                    <span>GRAND TOTAL</span>
-                                    <span>₹{selectedOrder.amount}</span>
-                                </div>
+                                {(() => {
+                                    const subtotal = selectedOrder.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                                    return (
+                                        <>
+                                            <div className="total-row">
+                                                <span>Subtotal</span>
+                                                <span>₹{subtotal}</span>
+                                            </div>
+                                            {selectedOrder.orderType === "Delivery" && (
+                                                <div className="total-row">
+                                                    <span>Delivery Fee</span>
+                                                    <span>₹2</span>
+                                                </div>
+                                            )}
+                                            {selectedOrder.discountAmount > 0 && (
+                                                <div className="total-row" style={{ color: 'green' }}>
+                                                    <span>Discount ({selectedOrder.promoCode})</span>
+                                                    <span>-₹{selectedOrder.discountAmount}</span>
+                                                </div>
+                                            )}
+                                            <div className="total-row grand-total">
+                                                <span>GRAND TOTAL</span>
+                                                <span>₹{selectedOrder.amount}</span>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
                             </div>
                             <hr />
                             <p className="footer-msg">Thank you for dining with us!</p>

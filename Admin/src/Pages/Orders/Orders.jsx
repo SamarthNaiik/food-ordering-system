@@ -11,12 +11,17 @@ const Orders = ({ url, token }) => {
   const [orders, setOrders] = useState([])
 
   const fetchAllOrders = async () => {
-    const response = await axios.get(url + "/api/order/list", { headers: { token } })
-    if (response.data.success) {
-      setOrders(response.data.data)
-      console.log(response.data.data);
-    } else {
-      toast.error("Error")
+    try {
+      const response = await axios.get(url + "/api/order/list", { headers: { token } })
+      if (response.data.success) {
+        setOrders(response.data.data)
+        console.log(response.data.data);
+      } else {
+        toast.error(response.data.message || "Error")
+      }
+    } catch (error) {
+      toast.error(error.message || "Network Error");
+      console.error(error);
     }
   }
 
@@ -114,21 +119,24 @@ const Orders = ({ url, token }) => {
               <p>Amount: ₹{order.amount}</p>
               <div className="order-item-actions">
                 {order.orderType === "Delivery" ? (
-                  <select onChange={(event) => statusHandler(event, order._id)} value={order.status}>
+                  <select onChange={(event) => statusHandler(event, order._id)} value={order.status} disabled={order.status === "Delivered" || order.status === "Cancelled"}>
                     <option value="Food Processing">Food Processing</option>
                     <option value="Out for Delivery">Out for Delivery</option>
                     <option value="Delivered">Delivered</option>
+                    {order.status === "Cancelled" && <option value="Cancelled">Cancelled</option>}
                   </select>
                 ) : (
                   <div className="dine-in-actions">
-                    {order.status === "Bill Sent" || order.status === "Cash Payment Requested" ? (
+                    {order.status === "Cancelled" ? (
+                      <span style={{color: 'red', fontWeight: 'bold', display: 'block', margin: '10px 0'}}>Cancelled</span>
+                    ) : order.status === "Bill Sent" || order.status === "Cash Payment Requested" ? (
                       <button className='settle-btn' style={{backgroundColor: '#000'}} onClick={() => statusHandler({target: {value: "Completed"}}, order._id)}>Settle & Close Table</button>
                     ) : (
                       <button className='settle-btn' onClick={() => statusHandler({target: {value: "Bill Sent"}}, order._id)}>Send Bill to User</button>
                     )}
                   </div>
                 )}
-                <button className='bill-btn' onClick={() => { setSelectedOrder(order); setShowBillModal(true); }}>View Bill</button>
+                <button className='bill-btn' disabled={order.status === "Cancelled"} onClick={() => { setSelectedOrder(order); setShowBillModal(true); }}>View Bill</button>
               </div>
             </div>
           )
@@ -186,20 +194,33 @@ const Orders = ({ url, token }) => {
               </table>
               <hr />
               <div className="bill-total">
-                <div className="total-row">
-                  <span>Subtotal</span>
-                  <span>₹{selectedOrder.amount - (selectedOrder.orderType === "Delivery" ? 2 : 0)}</span>
-                </div>
-                {selectedOrder.orderType === "Delivery" && (
-                  <div className="total-row">
-                    <span>Delivery Fee</span>
-                    <span>₹2</span>
-                  </div>
-                )}
-                <div className="total-row grand-total">
-                  <span>GRAND TOTAL</span>
-                  <span>₹{selectedOrder.amount}</span>
-                </div>
+                {(() => {
+                    const subtotal = selectedOrder.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                    return (
+                        <>
+                            <div className="total-row">
+                                <span>Subtotal</span>
+                                <span>₹{subtotal}</span>
+                            </div>
+                            {selectedOrder.orderType === "Delivery" && (
+                                <div className="total-row">
+                                    <span>Delivery Fee</span>
+                                    <span>₹2</span>
+                                </div>
+                            )}
+                            {selectedOrder.discountAmount > 0 && (
+                                <div className="total-row" style={{ color: 'green' }}>
+                                    <span>Discount ({selectedOrder.promoCode})</span>
+                                    <span>-₹{selectedOrder.discountAmount}</span>
+                                </div>
+                            )}
+                            <div className="total-row grand-total">
+                                <span>GRAND TOTAL</span>
+                                <span>₹{selectedOrder.amount}</span>
+                            </div>
+                        </>
+                    );
+                })()}
               </div>
               <hr />
               <p className="footer-msg">Thank you for your visit!</p>

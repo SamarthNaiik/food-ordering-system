@@ -1,5 +1,5 @@
 import express from "express"
-import { addFood, listFood, removeFood } from "../Controllers/FoodController.js"
+import { addFood, listFood, removeFood, editFood } from "../Controllers/FoodController.js"
 import multer from "multer"
 
 const foodRouter=express.Router()
@@ -19,5 +19,6 @@ import adminAuth from "../Middleware/adminAuth.js"
 foodRouter.post("/add", adminAuth, upload.single("image"), addFood)
 foodRouter.get("/list", listFood)
 foodRouter.post("/remove", adminAuth, removeFood)
+foodRouter.post("/edit", adminAuth, upload.single("image"), editFood)
 
 export default foodRouter

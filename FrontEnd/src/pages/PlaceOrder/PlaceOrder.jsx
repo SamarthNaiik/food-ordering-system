@@ -5,7 +5,7 @@ import axios from 'axios'
 import { useNavigate } from "react-router-dom"
 
 const PlaceOrder = () => {
-  const {getTotalCartAmount,token,food_list,cartItems,url}=useContext(StoreContext)
+  const {getTotalCartAmount,token,food_list,cartItems,setCartItems,url,promoCode,promoDiscount}=useContext(StoreContext)
 
   const [data,setData]=useState({
     firstName:"",
@@ -40,13 +40,16 @@ const PlaceOrder = () => {
         orderItems.push(itemInfo)
       }
     })
+    let finalAmount = Math.max(0, getTotalCartAmount() + (orderType === "Delivery" ? 2 : 0) - promoDiscount);
     let orderData={
       address: orderType === "Delivery" ? data : { firstName: "Dine-In", lastName: `Table ${tableNumber}`, phone: data.phone || "0000000000" },
       items:orderItems,
-      amount:getTotalCartAmount() + (orderType === "Delivery" ? 2 : 0),
+      amount: finalAmount,
       orderType: orderType,
       tableNumber: tableNumber,
-      paymentMethod: paymentMethod
+      paymentMethod: paymentMethod,
+      promoCode: promoCode,
+      discountAmount: promoDiscount
     }
     try {
       let response=await axios.post(url+"api/order/place",orderData,{headers:{token}})
@@ -55,6 +58,7 @@ const PlaceOrder = () => {
         if (session_url) {
             window.location.replace(session_url)
         } else {
+            setCartItems({})
             navigate("/myorders")
         }
       }
@@ -138,9 +142,18 @@ const PlaceOrder = () => {
                     <hr />
                 </>
             )}
+            {promoDiscount > 0 && (
+                <>
+                <div className="cart-total-details">
+                  <p>Promo Discount ({promoCode})</p>
+                  <p className="discount-text">-₹{promoDiscount}</p>
+                </div>
+                <hr />
+                </>
+            )}
             <div className="cart-total-details">
               <b>Total</b>
-              <b>₹{getTotalCartAmount()===0?0:(getTotalCartAmount() + (orderType === "Delivery" ? 2 : 0))}</b>
+              <b>₹{getTotalCartAmount()===0?0:Math.max(0, getTotalCartAmount() + (orderType === "Delivery" ? 2 : 0) - promoDiscount)}</b>
             </div>
           </div>
           {orderType === "Delivery" ? (

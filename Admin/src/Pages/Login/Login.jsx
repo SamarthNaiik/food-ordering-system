@@ -35,7 +35,7 @@ const Login = ({ setToken, url }) => {
             if (response.data.success) {
                 if (response.data.role === "admin") {
                     setToken(response.data.token);
-                    localStorage.setItem("token", response.data.token);
+                    sessionStorage.setItem("token", response.data.token);
                     toast.success(currState === "Login" ? "Logged in successfully" : "Admin account created");
                 } else {
                     toast.error("Access denied. Standard users cannot login here.");

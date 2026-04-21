@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from './Components/Navbar/Navbar'
 import Sidebar from './Components/Sidebar/Sidebar'
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import Add from './Pages/Add/Add'
 import List from './Pages/List/List'
 import Orders from './Pages/Orders/Orders'
@@ -18,7 +18,7 @@ const App = () => {
   const [token, setToken] = useState("");
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
+    const savedToken = sessionStorage.getItem("token");
     if (savedToken) {
       setToken(savedToken);
     }
@@ -35,6 +35,7 @@ const App = () => {
             <Sidebar />
           <div className="main-view">
             <Routes>
+              <Route path="/" element={<Navigate to="/orders" />} />
               <Route path="/add" element={<Add url={url} token={token}/>} />
               <Route path="/list" element={<List url={url} token={token}/>} />
               <Route path="/orders" element={<Orders url={url} token={token}/>} />

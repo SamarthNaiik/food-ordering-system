@@ -134,3 +134,5 @@
     position: static;
   }
 }
+
+.discount-text { color: green; font-weight: 500; }

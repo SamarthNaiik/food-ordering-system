@@ -9,7 +9,9 @@ const orderSchema=new mongoose.Schema({
     date:{type:Date,default:Date.now()},
     payment:{type:Boolean,default:false},
     orderType:{type:String,default:"Delivery"},
-    tableNumber:{type:String,default:""}
+    tableNumber:{type:String,default:""},
+    promoCode:{type:String,default:""},
+    discountAmount:{type:Number,default:0}
 })
 
 const orderModel=mongoose.models.order || mongoose.model("order",orderSchema)

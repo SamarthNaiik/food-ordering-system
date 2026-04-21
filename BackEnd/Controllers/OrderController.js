@@ -7,17 +7,19 @@ const stripe=new Stripe(process.env.STRIPE_SECRET_KEY)
 //Placing User Order from Frontend
 const placeOrder=async(req,res)=>{
 
-    const frontend_url="http://localhost:5175"
+    const frontend_url="http://localhost:5173"
 
     try {
         if (req.body.orderType === "Dine-In") {
-            // Check if there's an existing active (unpaid) order for this table and user
+            // Check if there's an existing active (unpaid) order for this table and user within the last 12 hours
+            const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
             const existingOrder = await orderModel.findOne({
                 userId: req.body.userId,
                 tableNumber: req.body.tableNumber,
                 orderType: "Dine-In",
                 payment: false,
-                status: "Food Processing"
+                status: "Food Processing",
+                date: { $gte: twelveHoursAgo }
             });
 
             if (existingOrder) {
@@ -55,7 +57,9 @@ const placeOrder=async(req,res)=>{
             amount:req.body.amount,
             address:req.body.address,
             orderType:req.body.orderType || "Delivery",
-            tableNumber:req.body.tableNumber || ""
+            tableNumber:req.body.tableNumber || "",
+            promoCode: req.body.promoCode || "",
+            discountAmount: req.body.discountAmount || 0
         })
         await newOrder.save()
         await userModel.findByIdAndUpdate(req.body.userId,{cartData:{}})
@@ -88,12 +92,23 @@ const placeOrder=async(req,res)=>{
             })
         }
 
-        const session=await stripe.checkout.sessions.create({
+        let sessionParams = {
             line_items:line_items,
             mode:"payment",
             success_url:`${frontend_url}/verify?success=true&orderId=${newOrder._id}`,
             cancel_url:`${frontend_url}/verify?success=false&orderId=${newOrder._id}`,
-        })
+        };
+
+        if (req.body.discountAmount > 0) {
+            const coupon = await stripe.coupons.create({
+                amount_off: Math.round(req.body.discountAmount * 100),
+                currency: 'inr',
+                duration: 'once',
+            });
+            sessionParams.discounts = [{ coupon: coupon.id }];
+        }
+
+        const session=await stripe.checkout.sessions.create(sessionParams)
         res.json({success:true,session_url:session.url})
     } catch(error) {
         console.log(error);
@@ -175,7 +190,7 @@ const cancelOrder = async (req, res) => {
             return res.json({ success: false, message: "Order is already being prepared/delivered" });
         }
 
-        await orderModel.findByIdAndDelete(req.body.orderId);
+        await orderModel.findByIdAndUpdate(req.body.orderId, { status: "Cancelled" });
         res.json({ success: true, message: "Order Cancelled Successfully" });
     } catch (error) {
         console.log(error);
@@ -186,7 +201,7 @@ const cancelOrder = async (req, res) => {
 // Dine-In Online Payment
 const dineInPayment = async (req, res) => {
     const { orderId } = req.body;
-    const frontend_url = "http://localhost:5175";
+    const frontend_url = "http://localhost:5173";
     try {
         const order = await orderModel.findById(orderId);
         const line_items = order.items.map((item) => ({
@@ -198,12 +213,23 @@ const dineInPayment = async (req, res) => {
             quantity: item.quantity
         }));
 
-        const session = await stripe.checkout.sessions.create({
+        let sessionParams = {
             line_items: line_items,
             mode: "payment",
             success_url: `${frontend_url}/verify?success=true&orderId=${order._id}`,
             cancel_url: `${frontend_url}/verify?success=false&orderId=${order._id}`,
-        });
+        };
+
+        if (order.discountAmount > 0) {
+            const coupon = await stripe.coupons.create({
+                amount_off: Math.round(order.discountAmount * 100),
+                currency: 'inr',
+                duration: 'once',
+            });
+            sessionParams.discounts = [{ coupon: coupon.id }];
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionParams);
         res.json({ success: true, session_url: session.url });
     } catch (error) {
         console.log(error);

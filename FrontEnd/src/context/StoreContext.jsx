@@ -12,6 +12,8 @@ const StoreContextProvider = (props) => {
     const [food_list,setFoodList]=useState([])
     const [search,setSearch]=useState("")
     const [userData,setUserData]=useState(null)
+    const [promoCode, setPromoCode] = useState("")
+    const [promoDiscount, setPromoDiscount] = useState(0)
 
     const getUserData = async (token) => {
         const response = await axios.post(url + "api/user/getprofile", {}, { headers: { token } })
@@ -65,9 +67,9 @@ const StoreContextProvider = (props) => {
     useEffect(()=>{
         async function loadData() {
             await fetchFoodList()
-            if(localStorage.getItem("token")) {
-                setToken(localStorage.getItem("token"))
-                await getUserData(localStorage.getItem("token"))
+            if(sessionStorage.getItem("token")) {
+                setToken(sessionStorage.getItem("token"))
+                await getUserData(sessionStorage.getItem("token"))
             }
         }
         loadData()
@@ -87,7 +89,11 @@ const StoreContextProvider = (props) => {
         setSearch,
         userData,
         setUserData,
-        getUserData
+        getUserData,
+        promoCode,
+        setPromoCode,
+        promoDiscount,
+        setPromoDiscount
     }
     return (
         <StoreContext.Provider value={contextValue}>
